@@ -1,11 +1,12 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
+import { auth } from "../firebase/firebaseApp";
 import { Box, Text, Heading } from "@chakra-ui/react";
 import styles from "@/styles/Index.module.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export default function Home() {
+  const user = auth.currentUser; // currently signed in user?
+
   return (
     <>
       <Head>
@@ -15,7 +16,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box>
-        <Heading>Home page</Heading>
+        <Heading>Home</Heading>
+        {user && <Text>Welcome, {user.email}.</Text>}
       </Box>
     </>
   );
