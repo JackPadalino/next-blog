@@ -3,9 +3,16 @@
   flex-direction: column;
   gap: 20px;
 }
+
 .loginForm {
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 25%;
+}
+
+.registerLink {
+  text-decoration: none;
+  font-weight: bold;
+  color: #319795;
 }
