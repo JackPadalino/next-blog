@@ -1,5 +1,5 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -19,6 +19,13 @@ const app = initializeApp(firebaseConfig);
 
 // Get Firebase services (only after initialization)
 const auth = getAuth(app);
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log("User is signed in");
+  } else {
+    console.log("User is signed out");
+  }
+});
 const firestore = getFirestore(app);
 const storage = getStorage(app); // Get Storage after app initialization
 
