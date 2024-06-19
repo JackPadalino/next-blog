@@ -64,7 +64,7 @@ const Login = () => {
 
   return (
     <Box className={`${styles.loginContainer}`}>
-      <Heading>Login page</Heading>
+      <Heading>Login</Heading>
       {user ? (
         <Text>You are already signed in.</Text>
       ) : (
