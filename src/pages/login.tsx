@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import {
   Box,
   Text,
+  Heading,
   Button,
   Input,
   FormControl,
@@ -9,6 +10,7 @@ import {
   InputLeftAddon,
   InputRightElement,
 } from "@chakra-ui/react";
+import styles from "@/styles/Login.module.css";
 
 interface LoginType {
   email: string;
@@ -40,14 +42,13 @@ const Login = () => {
   };
 
   return (
-    <Box>
-      <Text>Login page</Text>
-      <form onSubmit={handleSubmit}>
+    <Box className={`${styles.loginContainer}`}>
+      <Heading>Login page</Heading>
+      <form className={`${styles.loginForm}`} onSubmit={handleSubmit}>
         <FormControl id="email" isRequired>
           <Input
             type="text"
             placeholder="Username"
-            width="25%"
             borderColor="grey"
             focusBorderColor="dark-grey"
             value={formData.email}
@@ -55,7 +56,7 @@ const Login = () => {
           />
         </FormControl>
         <FormControl id="password" isRequired>
-          <InputGroup width="25%">
+          <InputGroup>
             <Input
               type={show ? "text" : "password"}
               placeholder="Password"

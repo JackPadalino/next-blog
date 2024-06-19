@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, Heading } from "@chakra-ui/react";
 import styles from "@/styles/Index.module.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,7 +16,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box>
-        <Text>Home page</Text>
+        <Heading>Home page</Heading>
       </Box>
       {/* <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.description}>
