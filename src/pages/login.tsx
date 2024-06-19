@@ -2,7 +2,6 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebaseApp";
-import { onAuthStateChanged } from "firebase/auth";
 import {
   Box,
   Text,
@@ -22,19 +21,8 @@ interface LoginType {
 }
 
 const Login = () => {
+  const user = auth.currentUser; // currently signed in user?
   const router = useRouter();
-
-  // user signed in state
-  const [userSignedIn, setUserSignedIn] = useState<boolean>(false);
-  useEffect(() => {
-    return onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserSignedIn(true);
-      } else {
-        setUserSignedIn(false);
-      }
-    });
-  }, []);
 
   //Form state and functions
   const [show, setShow] = useState<boolean>(false);
@@ -76,7 +64,7 @@ const Login = () => {
   return (
     <Box className={`${styles.loginContainer}`}>
       <Heading>Login page</Heading>
-      {userSignedIn ? (
+      {user ? (
         <Text>You are already signed in.</Text>
       ) : (
         <form className={`${styles.loginForm}`} onSubmit={handleLogin}>
