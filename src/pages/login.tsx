@@ -1,10 +1,11 @@
 import React from "react";
+import { Box, Text } from "@chakra-ui/react";
 
 const Login = () => {
   return (
-    <div>
-      <h1>Login page</h1>
-    </div>
+    <Box>
+      <Text>Login page</Text>
+    </Box>
   );
 };
 
