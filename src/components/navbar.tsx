@@ -9,9 +9,14 @@ const Navbar = () => {
 
   return (
     <Box className={styles.navbar}>
-      <Link className={styles.navbarLink} href="/">
-        Home
-      </Link>
+      <Box className={styles.navbarLeft}>
+        <Link className={styles.navbarLink} href="/">
+          Home
+        </Link>
+        <Link className={styles.navbarLink} href="/posts">
+          Posts
+        </Link>
+      </Box>
       {user ? (
         <Link className={styles.navbarLink} href="/logout">
           Logout
