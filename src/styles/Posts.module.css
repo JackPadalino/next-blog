@@ -3,3 +3,10 @@
   flex-direction: column;
   gap: 20px;
 }
+
+.postForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 25%;
+}
