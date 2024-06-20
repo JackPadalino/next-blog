@@ -78,9 +78,6 @@ const Posts = () => {
     fetchPosts();
   }, []);
 
-  if (loading) {
-    return <Text>Please wait...</Text>;
-  }
   return (
     <Box className={`${styles.postsContainer}`}>
       <Heading>Posts</Heading>
@@ -103,11 +100,15 @@ const Posts = () => {
           </Button>
         </form>
       )}
-      <Box>
-        {posts.map((post: PostType, index) => (
-          <Text key={index}>{post.content}</Text>
-        ))}
-      </Box>
+      {loading ? (
+        <Text>Loading posts...</Text>
+      ) : (
+        <Box>
+          {posts.map((post: PostType, index) => (
+            <Text key={index}>{post.content}</Text>
+          ))}
+        </Box>
+      )}
     </Box>
   );
 };
