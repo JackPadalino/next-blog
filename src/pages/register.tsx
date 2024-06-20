@@ -1,7 +1,8 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/firebaseApp";
+import { auth, db } from "../firebase/firebaseApp";
+import { doc, setDoc } from "firebase/firestore";
 import {
   Box,
   Text,
@@ -53,30 +54,35 @@ const Register = () => {
   // login handler function
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (formData.password === formData.confirmPassword) {
-      try {
-        // const response = await signInWithEmailAndPassword(
-        //   auth,
-        //   formData.email,
-        //   formData.password
-        // );
-        // const user = response.user;
-        await createUserWithEmailAndPassword(
-          auth,
-          formData.email,
-          formData.password
-        );
-        router.push("/");
-      } catch (error: any) {
-        // The 'any' type here captures any kind of error thrown
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        if (errorCode === "auth/email-already-in-use") {
-          setRegisterError("An account with this email already exists.");
-        }
-      }
-    } else {
+    // Validate passwords
+    if (formData.password !== formData.confirmPassword) {
       setRegisterError("Please make sure passwords match.");
+      return;
+    }
+    try {
+      // add user to Firebase Auth
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      // add user to Firebase Firestore
+      const data = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+      };
+      await setDoc(doc(db, "users", response.user.uid), data);
+      router.push("/");
+    } catch (error: any) {
+      // The 'any' type here captures any kind of error thrown
+      if (error.cdoe === "auth/email-already-in-use") {
+        setRegisterError("An account with this email already exists.");
+      } else {
+        setRegisterError(
+          "An unexpected error occured. Please refresh and try again."
+        );
+      }
     }
   };
 
@@ -88,7 +94,7 @@ const Register = () => {
       ) : (
         <form className={`${styles.loginForm}`} onSubmit={handleRegister}>
           <Stack direction="row">
-            <FormControl id="first name" isRequired>
+            <FormControl id="firstName" isRequired>
               <Input
                 type="text"
                 placeholder="First name"
@@ -98,7 +104,7 @@ const Register = () => {
                 onChange={handleInputChange}
               />
             </FormControl>
-            <FormControl id="last name" isRequired>
+            <FormControl id="lastName" isRequired>
               <Input
                 type="text"
                 placeholder="Last name"
