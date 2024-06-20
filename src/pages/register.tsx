@@ -12,10 +12,13 @@ import {
   InputGroup,
   InputLeftAddon,
   InputRightElement,
+  Stack,
 } from "@chakra-ui/react";
 import styles from "@/styles/Login.module.css";
 
 interface RegisterType {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -31,6 +34,8 @@ const Register = () => {
 
   const handleClick = () => setShow(!show);
   const [formData, setFormData] = useState<RegisterType>({
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -82,6 +87,28 @@ const Register = () => {
         <Text>You are already signed in.</Text>
       ) : (
         <form className={`${styles.loginForm}`} onSubmit={handleRegister}>
+          <Stack direction="row">
+            <FormControl id="first name" isRequired>
+              <Input
+                type="text"
+                placeholder="First name"
+                borderColor="grey"
+                focusBorderColor="dark-grey"
+                value={formData.firstName}
+                onChange={handleInputChange}
+              />
+            </FormControl>
+            <FormControl id="last name" isRequired>
+              <Input
+                type="text"
+                placeholder="Last name"
+                borderColor="grey"
+                focusBorderColor="dark-grey"
+                value={formData.lastName}
+                onChange={handleInputChange}
+              />
+            </FormControl>
+          </Stack>
           <FormControl id="email" isRequired>
             <Input
               type="email"
