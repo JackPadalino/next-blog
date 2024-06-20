@@ -76,7 +76,7 @@ const Register = () => {
       router.push("/");
     } catch (error: any) {
       // The 'any' type here captures any kind of error thrown
-      if (error.cdoe === "auth/email-already-in-use") {
+      if (error.code === "auth/email-already-in-use") {
         setRegisterError("An account with this email already exists.");
       } else {
         setRegisterError(
