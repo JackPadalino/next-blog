@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { auth, db } from "../firebase/firebaseApp";
-import { collection, doc, addDoc } from "firebase/firestore";
+import { collection, doc, addDoc, getDocs } from "firebase/firestore";
 import {
   Box,
   Text,
@@ -23,13 +23,29 @@ interface PostType {
 }
 
 const Posts = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const user = auth.currentUser; // currently signed in user?
+  const [posts, setPosts] = useState<PostType[]>([]);
   const [formData, setFormData] = useState<PostType>({
     userId: "",
     content: "",
   });
 
-  // Event handler for input change
+  // fetching posts from Firebase
+  const fetchPosts = async () => {
+    try {
+      const postsSnapshot = await getDocs(collection(db, "posts"));
+      // have to explicitly say that each document coming from Firebase DB is a 'PostType'
+      // It comes down originally as type 'DocumentData'?
+      const xPosts = postsSnapshot.docs.map((doc) => doc.data() as PostType);
+      setPosts(xPosts);
+      setLoading(false);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  // Event handler for post form change
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData({
@@ -38,6 +54,7 @@ const Posts = () => {
     });
   };
 
+  // create a new post
   const handlePost = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Add a new post with a generated id
@@ -47,6 +64,7 @@ const Posts = () => {
     };
     try {
       await addDoc(collection(db, "posts"), data);
+      fetchPosts();
       setFormData({
         userId: "",
         content: "",
@@ -56,6 +74,13 @@ const Posts = () => {
     }
   };
 
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return <Text>Please wait...</Text>;
+  }
   return (
     <Box className={`${styles.postsContainer}`}>
       <Heading>Posts</Heading>
@@ -78,6 +103,11 @@ const Posts = () => {
           </Button>
         </form>
       )}
+      <Box>
+        {posts.map((post: PostType, index) => (
+          <Text key={index}>{post.content}</Text>
+        ))}
+      </Box>
     </Box>
   );
 };
