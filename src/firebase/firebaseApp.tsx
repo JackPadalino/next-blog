@@ -26,7 +26,7 @@ onAuthStateChanged(auth, (user) => {
     console.log("User is signed out");
   }
 });
-const firestore = getFirestore(app);
+const db = getFirestore(app);
 const storage = getStorage(app); // Get Storage after app initialization
 
-export { app, auth, firestore, storage };
+export { app, auth, db, storage };
