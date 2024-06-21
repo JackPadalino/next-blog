@@ -19,13 +19,6 @@ const app = initializeApp(firebaseConfig);
 
 // Get Firebase services (only after initialization)
 const auth = getAuth(app);
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    console.log("User is signed in");
-  } else {
-    console.log("User is signed out");
-  }
-});
 const db = getFirestore(app);
 const storage = getStorage(app); // Get Storage after app initialization
 
