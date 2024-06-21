@@ -5,14 +5,14 @@ import { auth } from "../firebase/firebaseApp";
 import { Box, Text, Heading } from "@chakra-ui/react";
 
 import { postsState } from "@/recoil/postsAtom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 
 import { PostType } from "../types/appTypes"; // importing type
 import styles from "@/styles/Index.module.css";
 
 export default function Home() {
   const user = auth.currentUser; // currently signed in user?
-  const posts = useRecoilValue(postsState);
+  const [recoilPostsState, setRecoilPostsState] = useRecoilState(postsState);
 
   return (
     <>
@@ -26,8 +26,8 @@ export default function Home() {
         <Heading>Home</Heading>
         {user && <Text>Welcome, {user.email}.</Text>}
         {/* pulling data from posts atom in Recoil. Will delete later */}
-        {posts.length &&
-          posts.map((post: PostType, index: number) => (
+        {recoilPostsState.posts.length &&
+          recoilPostsState.posts.map((post: PostType, index: number) => (
             <Text key={index}>{post.content}</Text>
           ))}
       </Box>

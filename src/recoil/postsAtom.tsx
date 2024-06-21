@@ -8,11 +8,10 @@ type PostsState = {
 
 const defaultPostsState: PostsState = {
   posts: [],
+  // initialize other attributes here
 };
 
-// getting error here in _app.tsx online 33!
-// have to change 'any' type here back to PostsState!
-export const postsState = atom<any>({
+export const postsState = atom<PostsState>({
   key: "PostsState",
   default: defaultPostsState,
 });

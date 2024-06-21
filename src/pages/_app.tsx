@@ -30,7 +30,12 @@ export default function App({ Component, pageProps }: AppProps) {
         // have to explicitly say that each document coming from Firebase DB is a 'PostType'
         // It comes down originally as type 'DocumentData'?
         const xPosts = postsSnapshot.docs.map((doc) => doc.data() as PostType);
-        setRecoilPostsState(xPosts);
+        // update the posts array in the posts atom
+        // update only the posts array within PostsState
+        setRecoilPostsState((prevState) => ({
+          ...prevState,
+          posts: xPosts,
+        }));
       } catch (error: any) {
         console.log(error);
       }
@@ -38,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     useEffect(() => {
       // only run if array is empty
-      if (!recoilPostsState.length) {
+      if (!recoilPostsState.posts.length) {
         fetchPosts();
       }
     }, []);

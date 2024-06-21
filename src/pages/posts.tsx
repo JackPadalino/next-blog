@@ -4,7 +4,7 @@ import { auth, db } from "../firebase/firebaseApp";
 import { collection, doc, addDoc, getDocs } from "firebase/firestore";
 
 import { postsState } from "@/recoil/postsAtom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 
 import {
   Box,
@@ -24,25 +24,31 @@ import styles from "@/styles/Posts.module.css";
 
 const Posts = () => {
   const user = auth.currentUser; // currently signed in user?
-  const posts = useRecoilValue(postsState);
+  const [recoilPostsState, setRecoilPostsState] = useRecoilState(postsState);
   //   const [posts, setPosts] = useState<PostType[]>([]);
   const [formData, setFormData] = useState<PostType>({
     userId: "",
     content: "",
   });
 
-  //   // fetching posts from Firebase
-  //   const fetchPosts = async () => {
-  //     try {
-  //       const postsSnapshot = await getDocs(collection(db, "posts"));
-  //       // have to explicitly say that each document coming from Firebase DB is a 'PostType'
-  //       // It comes down originally as type 'DocumentData'?
-  //       const xPosts = postsSnapshot.docs.map((doc) => doc.data() as PostType);
-  //       setPosts(xPosts);
-  //     } catch (error: any) {
-  //       console.log(error);
-  //     }
-  //   };
+  // fetching posts from Firebase
+  const fetchPosts = async () => {
+    console.log("fetching posts");
+    try {
+      const postsSnapshot = await getDocs(collection(db, "posts"));
+      // have to explicitly say that each document coming from Firebase DB is a 'PostType'
+      // It comes down originally as type 'DocumentData'?
+      const xPosts = postsSnapshot.docs.map((doc) => doc.data() as PostType);
+      // update the posts array in the posts atom
+      // update only the posts array within PostsState
+      setRecoilPostsState((prevState) => ({
+        ...prevState,
+        posts: xPosts,
+      }));
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   // Event handler for post form change
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -63,7 +69,7 @@ const Posts = () => {
     };
     try {
       await addDoc(collection(db, "posts"), data);
-      //   fetchPosts();
+      fetchPosts();
       setFormData({
         userId: "",
         content: "",
@@ -99,9 +105,9 @@ const Posts = () => {
           </Button>
         </form>
       )}
-      {posts.length ? (
+      {recoilPostsState.posts.length ? (
         <Box>
-          {posts.map((post: PostType, index: number) => (
+          {recoilPostsState.posts.map((post: PostType, index: number) => (
             <Text key={index}>{post.content}</Text>
           ))}
         </Box>
