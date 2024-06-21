@@ -1,11 +1,18 @@
 import Head from "next/head";
-import { Inter } from "next/font/google";
+
 import { auth } from "../firebase/firebaseApp";
+
 import { Box, Text, Heading } from "@chakra-ui/react";
+
+import { postsState } from "@/recoil/postsAtom";
+import { useRecoilValue } from "recoil";
+
+import { PostType } from "../types/appTypes"; // importing type
 import styles from "@/styles/Index.module.css";
 
 export default function Home() {
   const user = auth.currentUser; // currently signed in user?
+  const posts = useRecoilValue(postsState);
 
   return (
     <>
@@ -18,6 +25,11 @@ export default function Home() {
       <Box>
         <Heading>Home</Heading>
         {user && <Text>Welcome, {user.email}.</Text>}
+        {/* pulling data from posts atom in Recoil. Will delete later */}
+        {posts.length &&
+          posts.map((post: PostType, index: number) => (
+            <Text key={index}>{post.content}</Text>
+          ))}
       </Box>
     </>
   );
