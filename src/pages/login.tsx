@@ -14,12 +14,8 @@ import {
   InputLeftAddon,
   InputRightElement,
 } from "@chakra-ui/react";
+import { LoginType } from "../types/appTypes"; // importing type
 import styles from "@/styles/Login.module.css";
-
-interface LoginType {
-  email: string;
-  password: string;
-}
 
 const Login = () => {
   const user = auth.currentUser; // currently signed in user?

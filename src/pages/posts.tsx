@@ -15,12 +15,8 @@ import {
   InputLeftAddon,
   InputRightElement,
 } from "@chakra-ui/react";
+import { PostType } from "../types/appTypes"; // importing type
 import styles from "@/styles/Posts.module.css";
-
-interface PostType {
-  userId: string;
-  content: string;
-}
 
 const Posts = () => {
   const [loading, setLoading] = useState<boolean>(true);

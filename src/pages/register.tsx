@@ -15,15 +15,8 @@ import {
   InputRightElement,
   Stack,
 } from "@chakra-ui/react";
+import { RegisterType } from "../types/appTypes"; // importing type
 import styles from "@/styles/Login.module.css";
-
-interface RegisterType {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
 
 const Register = () => {
   const user = auth.currentUser; // currently signed in user?
