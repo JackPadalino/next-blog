@@ -10,6 +10,9 @@ import "@/styles/globals.css";
  * FetchData is a component that is fetching data from Firebase DB
  */
 export default function App({ Component, pageProps }: AppProps) {
+  // Tried to put logic for fetching Firestore data here inside this
+  // app component, but this does not work. The logic must be wrapped
+  // inside the <RecoilRoot> component.
   return (
     <RecoilRoot>
       <FetchData />
