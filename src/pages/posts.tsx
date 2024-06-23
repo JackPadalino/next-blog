@@ -1,4 +1,10 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import React, {
+  useState,
+  useEffect,
+  ChangeEvent,
+  FormEvent,
+  SyntheticEvent,
+} from "react";
 
 import { auth, db } from "../firebase/firebaseApp";
 import { collection, doc, addDoc, getDocs } from "firebase/firestore";
@@ -17,6 +23,10 @@ import {
   InputGroup,
   InputLeftAddon,
   InputRightElement,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
 } from "@chakra-ui/react";
 
 import { PostType } from "../types/appTypes"; // importing type
@@ -84,7 +94,7 @@ const Posts = () => {
   //   }, []);
 
   return (
-    <Box className={`${styles.postsContainer}`}>
+    <Box className={`${styles.postsMainContainer}`}>
       <Heading>Posts</Heading>
       {user && (
         <form className={`${styles.postForm}`} onSubmit={handlePost}>
@@ -106,9 +116,14 @@ const Posts = () => {
         </form>
       )}
       {recoilPostsState.posts.length ? (
-        <Box>
+        <Box className={`${styles.postsContainer}`}>
           {recoilPostsState.posts.map((post: PostType, index: number) => (
-            <Text key={index}>{post.content}</Text>
+            // <Text key={index}>{post.content}</Text>
+            <Card key={index} className={`${styles.postCard}`}>
+              <CardBody>
+                <Text>{post.content}</Text>
+              </CardBody>
+            </Card>
           ))}
         </Box>
       ) : (

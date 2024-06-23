@@ -1,4 +1,4 @@
-.postsContainer {
+.postsMainContainer {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -9,4 +9,14 @@
   flex-direction: column;
   gap: 10px;
   width: 25%;
+}
+
+.postsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.postCard {
+  width: 50%;
 }
