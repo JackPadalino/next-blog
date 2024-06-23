@@ -12,7 +12,7 @@ import styles from "@/styles/Index.module.css";
 
 export default function Home() {
   const user = auth.currentUser; // currently signed in user?
-  const [recoilPostsState, setRecoilPostsState] = useRecoilState(postsState);
+  // const [recoilPostsState, setRecoilPostsState] = useRecoilState(postsState);
 
   return (
     <>
@@ -26,10 +26,10 @@ export default function Home() {
         <Heading>Home</Heading>
         {user && <Text>Welcome, {user.email}.</Text>}
         {/* pulling data from posts atom in Recoil. Will delete later */}
-        {recoilPostsState.posts.length &&
+        {/* {recoilPostsState.posts.length &&
           recoilPostsState.posts.map((post: PostType, index: number) => (
             <Text key={index}>{post.content}</Text>
-          ))}
+          ))} */}
       </Box>
     </>
   );
