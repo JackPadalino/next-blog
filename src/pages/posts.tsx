@@ -40,6 +40,7 @@ const Posts = () => {
   //   const [posts, setPosts] = useState<PostType[]>([]);
   const [formData, setFormData] = useState<PostType>({
     userId: "",
+    title: "",
     content: "",
     vectorEmbedding: [],
   });
@@ -64,7 +65,9 @@ const Posts = () => {
   };
 
   // Event handler for post form change
-  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLTextAreaElement> | ChangeEvent<HTMLInputElement>
+  ) => {
     const { id, value } = e.target;
     setFormData({
       ...formData,
@@ -76,28 +79,27 @@ const Posts = () => {
   const handlePost = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // generate vector embedding data (to be used for semantic search)
-    // getting an error about embedding the userId here
-    // for now we will only pass the content from the form to Gemini
-    const vectorData = {
-      userId: user?.uid,
-      content: formData.content,
-    };
-    const response = await gemini.embedContent(formData.content);
-    const embedding = response.embedding.values;
-
-    // Add a new post with a generated id
-    // and embedding data from gemini
-    const data = {
-      userId: user?.uid,
-      content: formData.content,
-      vectorEmbedding: embedding,
-    };
-
+    // getting an error about embedding the userId (number) here
+    // for now we will only pass the title and content from the form to Gemini
+    const vectorString = `title:${formData.title},content:${formData.content}`;
     try {
+      const response = await gemini.embedContent(vectorString);
+      const embedding = response.embedding.values;
+
+      // Add a new post with a generated id
+      // and embedding data from gemini
+      const data = {
+        userId: user?.uid,
+        title: formData.title,
+        content: formData.content,
+        vectorEmbedding: embedding,
+      };
+
       await addDoc(collection(db, "posts"), data);
       fetchPosts();
       setFormData({
         userId: "",
+        title: "",
         content: "",
         vectorEmbedding: [],
       });
@@ -115,9 +117,18 @@ const Posts = () => {
       <Heading>Posts</Heading>
       {user && (
         <form className={`${styles.postForm}`} onSubmit={handlePost}>
+          <FormControl id="title" isRequired>
+            <Input
+              type="text"
+              placeholder="Title"
+              borderColor="grey"
+              focusBorderColor="dark-grey"
+              value={formData.title}
+              onChange={handleInputChange}
+            />
+          </FormControl>
           <FormControl id="content" isRequired>
             <Textarea
-              // isRequired
               value={formData.content}
               onChange={handleInputChange}
               placeholder="Say something nice..."
@@ -135,16 +146,16 @@ const Posts = () => {
       {recoilPostsState.posts.length ? (
         <Box className={`${styles.postsContainer}`}>
           {recoilPostsState.posts.map((post: PostType, index: number) => (
-            // <Text key={index}>{post.content}</Text>
             <Card key={index} className={`${styles.postCard}`}>
               <CardBody>
+                <Heading>{post.title}</Heading>
                 <Text>{post.content}</Text>
               </CardBody>
             </Card>
           ))}
         </Box>
       ) : (
-        <Text>Loading posts...</Text>
+        <Text>There are no posts right now!</Text>
       )}
     </Box>
   );

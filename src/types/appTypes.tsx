@@ -2,6 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export type PostType = {
   userId: string;
+  title: string;
   content: string;
   vectorEmbedding: number[];
 };
