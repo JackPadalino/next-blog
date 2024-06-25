@@ -3,6 +3,7 @@ import { Timestamp } from "firebase/firestore";
 export type PostType = {
   userId: string;
   content: string;
+  vectorEmbedding: number[];
 };
 
 export type RegisterType = {
