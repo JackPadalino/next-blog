@@ -9,6 +9,8 @@ import React, {
 import { auth, db } from "../firebase/firebaseApp";
 import { collection, doc, addDoc, getDocs } from "firebase/firestore";
 
+import gemini from "@/gemini/geminiConfig";
+
 import { postsState } from "@/recoil/postsAtom";
 import { useRecoilState } from "recoil";
 
@@ -39,6 +41,7 @@ const Posts = () => {
   const [formData, setFormData] = useState<PostType>({
     userId: "",
     content: "",
+    vectorEmbedding: [],
   });
 
   // fetching posts from Firebase
@@ -72,17 +75,31 @@ const Posts = () => {
   // create a new post
   const handlePost = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Add a new post with a generated id
-    const data = {
+    // generate vector embedding data (to be used for semantic search)
+    // getting an error about embedding the userId here
+    // for now we will only pass the content from the form to Gemini
+    const vectorData = {
       userId: user?.uid,
       content: formData.content,
     };
+    const response = await gemini.embedContent(formData.content);
+    const embedding = response.embedding.values;
+
+    // Add a new post with a generated id
+    // and embedding data from gemini
+    const data = {
+      userId: user?.uid,
+      content: formData.content,
+      vectorEmbedding: embedding,
+    };
+
     try {
       await addDoc(collection(db, "posts"), data);
       fetchPosts();
       setFormData({
         userId: "",
         content: "",
+        vectorEmbedding: [],
       });
     } catch (error: any) {
       console.log(error);
