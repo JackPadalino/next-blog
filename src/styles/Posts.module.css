@@ -4,6 +4,11 @@
   gap: 20px;
 }
 
+.postsFormsContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
 .postForm {
   display: flex;
   flex-direction: column;

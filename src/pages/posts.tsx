@@ -38,12 +38,14 @@ const Posts = () => {
   const user = auth.currentUser; // currently signed in user?
   const [recoilPostsState, setRecoilPostsState] = useRecoilState(postsState);
   //   const [posts, setPosts] = useState<PostType[]>([]);
-  const [formData, setFormData] = useState<PostType>({
+  const [postFormError, setPostFormError] = useState<string>("");
+  const [postFormData, setPostFormData] = useState<PostType>({
     userId: "",
     title: "",
     content: "",
     vectorEmbedding: [],
   });
+  const [searchFormQuery, setSearchFormQuery] = useState<string>("");
 
   // fetching posts from Firebase
   const fetchPosts = async () => {
@@ -65,12 +67,16 @@ const Posts = () => {
   };
 
   // Event handler for post form change
-  const handleInputChange = (
+  const handlePostInputChange = (
     e: ChangeEvent<HTMLTextAreaElement> | ChangeEvent<HTMLInputElement>
   ) => {
+    if (!user) {
+      setPostFormError("Please log in in to make a post!");
+      return;
+    }
     const { id, value } = e.target;
-    setFormData({
-      ...formData,
+    setPostFormData({
+      ...postFormData,
       [id]: value,
     });
   };
@@ -78,10 +84,13 @@ const Posts = () => {
   // create a new post
   const handlePost = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) {
+      return;
+    }
     // generate vector embedding data (to be used for semantic search)
     // getting an error about embedding the userId (number) here
     // for now we will only pass the title and content from the form to Gemini
-    const vectorString = `title:${formData.title},content:${formData.content}`;
+    const vectorString = `title:${postFormData.title},content:${postFormData.content}`;
     try {
       const response = await gemini.embedContent(vectorString);
       const embedding = response.embedding.values;
@@ -90,14 +99,14 @@ const Posts = () => {
       // and embedding data from gemini
       const data = {
         userId: user?.uid,
-        title: formData.title,
-        content: formData.content,
+        title: postFormData.title,
+        content: postFormData.content,
         vectorEmbedding: embedding,
       };
 
       await addDoc(collection(db, "posts"), data);
       fetchPosts();
-      setFormData({
+      setPostFormData({
         userId: "",
         title: "",
         content: "",
@@ -108,6 +117,22 @@ const Posts = () => {
     }
   };
 
+  const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchFormQuery(e.target.value);
+  };
+
+  const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await gemini.embedContent(searchFormQuery);
+      const embedding = response.embedding.values;
+      console.log(embedding);
+    } catch (error: any) {
+      console.log(error);
+    }
+    setSearchFormQuery("");
+  };
+
   //   useEffect(() => {
   //     fetchPosts();
   //   }, []);
@@ -115,7 +140,7 @@ const Posts = () => {
   return (
     <Box className={`${styles.postsMainContainer}`}>
       <Heading>Posts</Heading>
-      {user && (
+      <Box className={`${styles.postsFormsContainer}`}>
         <form className={`${styles.postForm}`} onSubmit={handlePost}>
           <FormControl id="title" isRequired>
             <Input
@@ -123,14 +148,14 @@ const Posts = () => {
               placeholder="Title"
               borderColor="grey"
               focusBorderColor="dark-grey"
-              value={formData.title}
-              onChange={handleInputChange}
+              value={postFormData.title}
+              onChange={handlePostInputChange}
             />
           </FormControl>
           <FormControl id="content" isRequired>
             <Textarea
-              value={formData.content}
-              onChange={handleInputChange}
+              value={postFormData.content}
+              onChange={handlePostInputChange}
               placeholder="Say something nice..."
               borderColor="grey"
               focusBorderColor="dark-grey"
@@ -142,7 +167,23 @@ const Posts = () => {
             Post
           </Button>
         </form>
-      )}
+        <form className={`${styles.postForm}`} onSubmit={handleSearch}>
+          <FormControl id="search" isRequired>
+            <Input
+              type="text"
+              placeholder="Search for posts"
+              borderColor="grey"
+              focusBorderColor="dark-grey"
+              value={searchFormQuery}
+              onChange={handleSearchInputChange}
+            />
+          </FormControl>
+          <Button type="submit" colorScheme="teal">
+            Search
+          </Button>
+        </form>
+      </Box>
+      {postFormError && <Text>{postFormError}</Text>}
       {recoilPostsState.posts.length ? (
         <Box className={`${styles.postsContainer}`}>
           {recoilPostsState.posts.map((post: PostType, index: number) => (
