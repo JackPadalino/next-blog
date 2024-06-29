@@ -142,7 +142,7 @@ const Posts = () => {
         .then(() => {
           const queryCallable = httpsCallable(
             functions,
-            "ext-firestore-vector-search-jn7i-queryCallable"
+            `ext-${process.env.NEXT_PUBLIC_FIRESTORE_SEARCH_EXTENSION_NAME}-queryCallable`
           );
           // perform the search and limit the results to 10
           queryCallable({ query: searchFormQuery, limit: 10 })
