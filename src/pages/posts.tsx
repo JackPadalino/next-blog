@@ -167,64 +167,51 @@ const Posts = () => {
   return (
     <Box className={`${styles.postsMainContainer}`}>
       <Heading>Posts</Heading>
-      <Box className={`${styles.postsFormsContainer}`}>
-        <form className={`${styles.postForm}`} onSubmit={handlePost}>
-          <FormControl id="title" isRequired>
-            <Input
-              type="text"
-              placeholder="Title"
-              borderColor="grey"
-              focusBorderColor="dark-grey"
-              value={postFormData.title}
-              onChange={handlePostInputChange}
-            />
-          </FormControl>
-          <FormControl id="content" isRequired>
-            <Textarea
-              value={postFormData.content}
-              onChange={handlePostInputChange}
-              placeholder="Say something nice..."
-              borderColor="grey"
-              focusBorderColor="dark-grey"
-              //   size="sm"
-            />
-          </FormControl>
+      <Box className={styles.postsSecondContainer}>
+        {recoilPostsState.posts.length ? (
+          <Box className={`${styles.postsCardsContainer}`}>
+            {recoilPostsState.posts.map((post: PostType, index: number) => (
+              <Card key={index} className={`${styles.postCard}`}>
+                <CardBody>
+                  <Heading>{post.title}</Heading>
+                  <Text>{post.content}</Text>
+                </CardBody>
+              </Card>
+            ))}
+          </Box>
+        ) : (
+          <Text>There are no posts right now!</Text>
+        )}
+        <Box className={`${styles.postsFormsContainer}`}>
+          <form className={`${styles.postForm}`} onSubmit={handlePost}>
+            <FormControl id="title" isRequired>
+              <Input
+                type="text"
+                placeholder="Title"
+                borderColor="grey"
+                focusBorderColor="dark-grey"
+                value={postFormData.title}
+                onChange={handlePostInputChange}
+              />
+            </FormControl>
+            <FormControl id="content" isRequired>
+              <Textarea
+                value={postFormData.content}
+                onChange={handlePostInputChange}
+                placeholder="Say something nice..."
+                borderColor="grey"
+                focusBorderColor="dark-grey"
+                //   size="sm"
+              />
+            </FormControl>
 
-          <Button type="submit" colorScheme="teal">
-            Post
-          </Button>
-        </form>
-        <form className={`${styles.postForm}`} onSubmit={handleSearch}>
-          <FormControl id="search" isRequired>
-            <Input
-              type="text"
-              placeholder="Search for posts"
-              borderColor="grey"
-              focusBorderColor="dark-grey"
-              value={searchFormQuery}
-              onChange={handleSearchInputChange}
-            />
-          </FormControl>
-          <Button type="submit" colorScheme="teal">
-            Search
-          </Button>
-        </form>
-      </Box>
-      {postFormError && <Text>{postFormError}</Text>}
-      {recoilPostsState.posts.length ? (
-        <Box className={`${styles.postsContainer}`}>
-          {recoilPostsState.posts.map((post: PostType, index: number) => (
-            <Card key={index} className={`${styles.postCard}`}>
-              <CardBody>
-                <Heading>{post.title}</Heading>
-                <Text>{post.content}</Text>
-              </CardBody>
-            </Card>
-          ))}
+            <Button type="submit" colorScheme="teal">
+              Post
+            </Button>
+          </form>
+          {postFormError && <Text>{postFormError}</Text>}
         </Box>
-      ) : (
-        <Text>There are no posts right now!</Text>
-      )}
+      </Box>
     </Box>
   );
 };

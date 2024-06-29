@@ -4,24 +4,24 @@
   gap: 20px;
 }
 
-.postsFormsContainer {
+.postsSecondContainer {
   display: flex;
   justify-content: space-between;
+}
+
+.postsCardsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 10px;
+}
+
+.postsFormsContainer {
+  width: 25%;
 }
 
 .postForm {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 25%;
-}
-
-.postsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.postCard {
-  width: 50%;
 }
