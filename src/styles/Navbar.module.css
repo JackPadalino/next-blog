@@ -1,11 +1,17 @@
 .navbar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 30px;
+  padding-bottom: 5px;
   border-bottom: 1px solid gray;
 }
 
 .navbarLeft {
   display: flex;
   gap: 10px;
+}
+
+.navSearch {
+  width: 50%;
 }
