@@ -1,7 +1,8 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInAnonymously } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,5 +22,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app); // Get Storage after app initialization
+const functions = getFunctions(app, "us-east4");
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, functions };
