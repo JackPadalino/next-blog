@@ -7,6 +7,7 @@ import React, {
 } from "react";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { auth, db, functions } from "../firebase/firebaseApp";
 
@@ -33,6 +34,7 @@ import styles from "@/styles/Navbar.module.css";
 
 const Navbar = () => {
   const user = auth.currentUser; // currently signed in user?
+  const router = useRouter();
   const [searchFormQuery, setSearchFormQuery] = useState<string>("");
 
   const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +57,7 @@ const Navbar = () => {
               // display the results - an array of ids that best match our query
               // closest matches first
               console.log(result.data);
+              router.push("/results");
             })
             .catch((error) => {
               console.error("Error querying function:", error);
