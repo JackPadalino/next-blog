@@ -4,7 +4,11 @@ export type PostType = {
   userId: string;
   title: string;
   content: string;
-  vectorEmbedding: number[];
+  // removing embedding property for now
+  // the vertex AI extension we are using
+  // to perform our seach creates an embedding field
+  // automatically when a new post is created
+  // embedding: number[];
 };
 
 export type RegisterType = {
