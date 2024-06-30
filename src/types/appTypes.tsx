@@ -23,3 +23,11 @@ export type LoginType = {
   email: string;
   password: string;
 };
+
+export type SearchResultType = {
+  userId: string;
+  title: string;
+  content: string;
+  embedding: object;
+  status: object;
+};
