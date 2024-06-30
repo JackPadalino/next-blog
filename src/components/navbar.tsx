@@ -10,6 +10,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { auth, db, functions } from "../firebase/firebaseApp";
+import {
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  getDoc,
+  query,
+} from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
+import { signInAnonymously } from "firebase/auth";
 
 import {
   Box,
@@ -26,9 +36,6 @@ import {
 } from "@chakra-ui/react";
 
 import { SearchIcon } from "@chakra-ui/icons";
-
-import { httpsCallable } from "firebase/functions";
-import { signInAnonymously } from "firebase/auth";
 
 import styles from "@/styles/Navbar.module.css";
 
@@ -53,11 +60,18 @@ const Navbar = () => {
           );
           // perform the search and limit the results to 10
           queryCallable({ query: searchFormQuery, limit: 10 })
-            .then((result) => {
+            .then(async (result) => {
               // display the results - an array of ids that best match our query
               // closest matches first
-              console.log(result.data);
-              router.push("/results");
+              // const results = result.data.ids.map((resultId) => {});
+              // router.push("/results");
+              const results: any = result.data;
+              const ids = results[Object.keys(results)[0]];
+              for (const id of ids) {
+                const docRef = doc(db, "posts", id);
+                const docSnap = await getDoc(docRef);
+                console.log(docSnap.data());
+              }
             })
             .catch((error) => {
               console.error("Error querying function:", error);
