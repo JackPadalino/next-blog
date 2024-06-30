@@ -21,6 +21,10 @@ import {
 import { httpsCallable } from "firebase/functions";
 import { signInAnonymously } from "firebase/auth";
 
+import { useRecoilState } from "recoil";
+import { searchResultsState } from "../recoil/searchAtom";
+import { SearchResultType } from "@/types/appTypes";
+
 import {
   Box,
   Text,
@@ -41,8 +45,10 @@ import styles from "@/styles/Navbar.module.css";
 
 const Navbar = () => {
   const user = auth.currentUser; // currently signed in user?
-  const router = useRouter();
   const [searchFormQuery, setSearchFormQuery] = useState<string>("");
+  const [recoilSearchResultsState, setRecoilSearchResultsState] =
+    useRecoilState(searchResultsState);
+  const router = useRouter();
 
   const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchFormQuery(e.target.value);
@@ -63,15 +69,23 @@ const Navbar = () => {
             .then(async (result) => {
               // display the results - an array of ids that best match our query
               // closest matches first
-              // const results = result.data.ids.map((resultId) => {});
-              // router.push("/results");
+              // console.log(result.data)
               const results: any = result.data;
               const ids = results[Object.keys(results)[0]];
-              for (const id of ids) {
+              // creating an array of promises to batch request
+              // docs from firestore
+              const docPromises = ids.map((id: string) => {
                 const docRef = doc(db, "posts", id);
-                const docSnap = await getDoc(docRef);
-                console.log(docSnap.data());
-              }
+                return getDoc(docRef);
+              });
+              const docSnapshot = await Promise.all(docPromises);
+              const xSearchResults = docSnapshot.map(
+                (doc: any) => doc.data() as SearchResultType
+              );
+              setRecoilSearchResultsState({
+                searchResults: xSearchResults,
+              });
+              router.push("/results");
             })
             .catch((error) => {
               console.error("Error querying function:", error);
