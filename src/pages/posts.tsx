@@ -1,9 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 
-import { auth, db, functions } from "../firebase/firebaseApp";
+import { auth, db } from "../firebase/firebaseApp";
 import { collection, addDoc, getDocs } from "firebase/firestore";
-import { httpsCallable } from "firebase/functions";
-import { signInAnonymously } from "firebase/auth";
 
 // import gemini from "@/gemini/geminiConfig";
 
@@ -36,7 +34,6 @@ const Posts = () => {
     content: "",
     // embedding: [],
   });
-  const [searchFormQuery, setSearchFormQuery] = useState<string>("");
 
   // fetching posts from Firebase
   const fetchPosts = async () => {
@@ -105,44 +102,6 @@ const Posts = () => {
     } catch (error: any) {
       console.log(error);
     }
-  };
-
-  const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchFormQuery(e.target.value);
-  };
-
-  const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      // const response = await gemini.embedContent(searchFormQuery);
-      // const embedding = response.embedding.values;
-      // console.log(embedding);
-
-      // sign in anonymously (enabled to allow users to search)
-      signInAnonymously(auth)
-        .then(() => {
-          const queryCallable = httpsCallable(
-            functions,
-            `ext-${process.env.NEXT_PUBLIC_FIRESTORE_SEARCH_EXTENSION_NAME}-queryCallable`
-          );
-          // perform the search and limit the results to 10
-          queryCallable({ query: searchFormQuery, limit: 10 })
-            .then((result) => {
-              // display the results - an array of ids that best match our query
-              // closest matches first
-              console.log(result.data);
-            })
-            .catch((error) => {
-              console.error("Error querying function:", error);
-            });
-        })
-        .catch((error) => {
-          console.error("Error signing in anonymously:", error);
-        });
-    } catch (error: any) {
-      console.log(error);
-    }
-    setSearchFormQuery("");
   };
 
   return (
