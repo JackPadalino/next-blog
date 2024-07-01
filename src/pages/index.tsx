@@ -15,7 +15,7 @@ export default function Home() {
       </Head>
       <Box>
         <Heading>Home</Heading>
-        {user && <Text>Welcome to Next Blog.{user.email}.</Text>}
+        <Text>Welcome to Next Blog!</Text>
       </Box>
     </>
   );
