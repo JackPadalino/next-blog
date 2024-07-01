@@ -1,0 +1,17 @@
+.resultsMainContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.postsSecondContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.resultsCardsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 10px;
+}
