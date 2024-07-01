@@ -1,8 +1,13 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
+
 import { useRouter } from "next/navigation";
+
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase/firebaseApp";
 import { doc, setDoc } from "firebase/firestore";
+
+import { RegisterType } from "../types/appTypes"; // importing type
+
 import {
   Box,
   Text,
@@ -11,11 +16,9 @@ import {
   Input,
   FormControl,
   InputGroup,
-  InputLeftAddon,
   InputRightElement,
   Stack,
 } from "@chakra-ui/react";
-import { RegisterType } from "../types/appTypes"; // importing type
 import styles from "@/styles/Login.module.css";
 
 const Register = () => {

@@ -1,46 +1,27 @@
-import React, {
-  useState,
-  useEffect,
-  ChangeEvent,
-  FormEvent,
-  MouseEvent,
-} from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { auth, db, functions } from "../firebase/firebaseApp";
-import {
-  collection,
-  doc,
-  addDoc,
-  getDocs,
-  getDoc,
-  query,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { signInAnonymously } from "firebase/auth";
 
 import { useRecoilState } from "recoil";
 import { searchResultsState } from "../recoil/searchAtom";
+
+import { SearchIcon } from "@chakra-ui/icons";
 import { SearchResultType } from "@/types/appTypes";
 
 import {
   Box,
-  Text,
-  Textarea,
-  Heading,
   Button,
   Input,
   FormControl,
-  IconButton,
   InputGroup,
-  InputLeftAddon,
   InputRightElement,
 } from "@chakra-ui/react";
-
-import { SearchIcon } from "@chakra-ui/icons";
-
 import styles from "@/styles/Navbar.module.css";
 
 const Navbar = () => {

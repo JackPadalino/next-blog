@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { useRecoilState } from "recoil";
 import { searchResultsState } from "../recoil/searchAtom";
 import { SearchResultType } from "@/types/appTypes";
 
 import { Box, Text, Heading, Card, CardBody } from "@chakra-ui/react";
-
 import styles from "@/styles/Results.module.css";
 
 const Results = () => {

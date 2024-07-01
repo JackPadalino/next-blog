@@ -1,8 +1,11 @@
 import type { AppProps } from "next/app";
-import { ChakraProvider, Text } from "@chakra-ui/react";
+
 import { RecoilRoot } from "recoil";
-import FetchData from "@/components/fetchData";
+
 import Layout from "../components/layout";
+import FetchData from "@/components/fetchData";
+
+import { ChakraProvider } from "@chakra-ui/react";
 import "@/styles/globals.css";
 
 // imports for fetching data

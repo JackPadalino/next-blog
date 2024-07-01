@@ -1,5 +1,7 @@
 import Head from "next/head";
+
 import { auth } from "../firebase/firebaseApp";
+
 import { Box, Text, Heading } from "@chakra-ui/react";
 
 export default function Home() {

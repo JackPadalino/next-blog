@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+
 import { useRouter } from "next/navigation";
+
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebaseApp";
 

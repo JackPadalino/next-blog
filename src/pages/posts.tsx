@@ -1,25 +1,16 @@
-import React, {
-  useState,
-  useEffect,
-  ChangeEvent,
-  FormEvent,
-  SyntheticEvent,
-} from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 
 import { auth, db, functions } from "../firebase/firebaseApp";
-import {
-  collection,
-  doc,
-  addDoc,
-  getDocs,
-  getDoc,
-  query,
-} from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
+import { signInAnonymously } from "firebase/auth";
 
 // import gemini from "@/gemini/geminiConfig";
 
 import { postsState } from "@/recoil/postsAtom";
 import { useRecoilState } from "recoil";
+
+import { PostType } from "../types/appTypes"; // importing type
 
 import {
   Box,
@@ -29,20 +20,10 @@ import {
   Button,
   Input,
   FormControl,
-  InputGroup,
-  InputLeftAddon,
-  InputRightElement,
   Card,
-  CardHeader,
   CardBody,
-  CardFooter,
 } from "@chakra-ui/react";
-
-import { PostType } from "../types/appTypes"; // importing type
 import styles from "@/styles/Posts.module.css";
-
-import { httpsCallable } from "firebase/functions";
-import { signInAnonymously } from "firebase/auth";
 
 const Posts = () => {
   const user = auth.currentUser; // currently signed in user?
