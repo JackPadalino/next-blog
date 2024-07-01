@@ -64,6 +64,7 @@ const Navbar = () => {
                 (doc: any) => doc.data() as SearchResultType
               );
               setRecoilSearchResultsState({
+                searchQuery: searchFormQuery,
                 searchResults: xSearchResults,
               });
               router.push("/results");

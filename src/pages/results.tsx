@@ -16,6 +16,7 @@ const Results = () => {
       <Heading>Search results</Heading>
       {recoilSearchResultsState.searchResults.length ? (
         <Box className={`${styles.resultsCardsContainer}`}>
+          <Text>{`Showing results for '${recoilSearchResultsState.searchQuery}'`}</Text>
           {recoilSearchResultsState.searchResults.map(
             (searchResult: SearchResultType, index: number) => (
               <Card key={index} className={`${styles.resultCard}`}>
@@ -28,7 +29,7 @@ const Results = () => {
           )}
         </Box>
       ) : (
-        <Text>Sorry, we didn't find anything related to your search.</Text>
+        <Text>Sorry, we did not find anything related to your search.</Text>
       )}
     </Box>
   );
