@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.11.5",
     "@google-cloud/firestore": "^7.9.0",
     "@google/generative-ai": "^0.13.0",
+    "dotenv": "^16.4.5",
     "firebase": "^10.12.2",
     "framer-motion": "^11.2.10",
     "next": "14.2.4",

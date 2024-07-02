@@ -1,37 +1,36 @@
-// config for Firebase
+import dotenv from "dotenv";
+dotenv.config();
+
+// Config for Firebase
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
-  measurementId: "",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-console.log(firebaseConfig);
-
-// Initialize Firebase (if not already initialized)
 const app = initializeApp(firebaseConfig);
 
-// Get Firebase services (only after initialization)
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app); // Get Storage after app initialization
 const functions = getFunctions(app, "us-east4");
 
-// config for Google Gemini - to generate text embeddings
+// Config for Google Gemini - to generate text embeddings
 import { GoogleGenerativeAI } from "@google/generative-ai";
-const genAI = new GoogleGenerativeAI("");
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_AI_API_KEY);
 const gemini = genAI.getGenerativeModel({ model: "embedding-001" });
 
+// Seed posts
 const seedPosts = [
   {
     title: "Helping Students with Anger Management Issues",
@@ -87,5 +86,5 @@ for (const post of seedPosts) {
   const response = await gemini.embedContent(post.content);
   const embedding = response.embedding.values;
   post.embedding = embedding;
-  console.log(post);
+  await addDoc(collection(db, "posts"), post);
 }
