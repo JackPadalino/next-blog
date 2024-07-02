@@ -4,9 +4,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { auth, db, functions } from "../firebase/firebaseApp";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { signInAnonymously } from "firebase/auth";
+
+import {
+  Firestore,
+  FieldValue,
+  VectorQuery,
+  VectorQuerySnapshot,
+} from "@google-cloud/firestore";
+
+import gemini from "@/gemini/geminiConfig";
 
 import { useRecoilState } from "recoil";
 import { searchResultsState } from "../recoil/searchAtom";
@@ -38,44 +47,63 @@ const Navbar = () => {
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // sign in anonymously (enabled to allow users to search)
-      signInAnonymously(auth)
-        .then(() => {
-          const queryCallable = httpsCallable(
-            functions,
-            `ext-${process.env.NEXT_PUBLIC_FIRESTORE_SEARCH_EXTENSION_NAME}-queryCallable`
-          );
-          // perform the search and limit the results to 10
-          queryCallable({ query: searchFormQuery, limit: 10 })
-            .then(async (result) => {
-              // display the results - an array of ids that best match our query
-              // closest matches first
-              // console.log(result.data)
-              const results: any = result.data;
-              const ids = results[Object.keys(results)[0]];
-              // creating an array of promises to batch request
-              // docs from firestore
-              const docPromises = ids.map((id: string) => {
-                const docRef = doc(db, "posts", id);
-                return getDoc(docRef);
-              });
-              const docSnapshot = await Promise.all(docPromises);
-              const xSearchResults = docSnapshot.map(
-                (doc: any) => doc.data() as SearchResultType
-              );
-              setRecoilSearchResultsState({
-                searchQuery: searchFormQuery,
-                searchResults: xSearchResults,
-              });
-              router.push("/results");
-            })
-            .catch((error) => {
-              console.error("Error querying function:", error);
-            });
-        })
-        .catch((error) => {
-          console.error("Error signing in anonymously:", error);
-        });
+      //   // sign in anonymously (enabled to allow users to search)
+      //   signInAnonymously(auth)
+      //     .then(() => {
+      //       const queryCallable = httpsCallable(
+      //         functions,
+      //         `ext-${process.env.NEXT_PUBLIC_FIRESTORE_SEARCH_EXTENSION_NAME}-queryCallable`
+      //       );
+      //       // perform the search and limit the results to 10
+      //       queryCallable({ query: searchFormQuery, limit: 10 })
+      //         .then(async (result) => {
+      //           // display the results - an array of ids that best match our query
+      //           // closest matches first
+      //           // console.log(result.data)
+      //           const results: any = result.data;
+      //           const ids = results[Object.keys(results)[0]];
+      //           // creating an array of promises to batch request
+      //           // docs from firestore
+      //           const docPromises = ids.map((id: string) => {
+      //             const docRef = doc(db, "posts", id);
+      //             return getDoc(docRef);
+      //           });
+      //           const docSnapshot = await Promise.all(docPromises);
+      //           const xSearchResults = docSnapshot.map(
+      //             (doc: any) => doc.data() as SearchResultType
+      //           );
+      //           setRecoilSearchResultsState({
+      //             searchQuery: searchFormQuery,
+      //             searchResults: xSearchResults,
+      //           });
+      //           router.push("/results");
+      //         })
+      //         .catch((error) => {
+      //           console.error("Error querying function:", error);
+      //         });
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error signing in anonymously:", error);
+      //     });
+
+      /* LEFT OFF HERE
+
+      https://firebase.google.com/docs/firestore/vector-search
+
+      **/
+      const response = await gemini.embedContent(searchFormQuery);
+      const embedding = response.embedding.values;
+
+      // const db = new Firestore(); <---this line is being a bitch
+      // const coll = db.collection("posts");
+      // const vectorQuery: VectorQuery = coll.findNearest(
+      //   "embedding",
+      //   FieldValue.vector(embedding),
+      //   {
+      //     limit: 5,
+      //     distanceMeasure: "EUCLIDEAN",
+      //   }
+      // );
     } catch (error: any) {
       console.log(error);
     }
