@@ -38,44 +38,74 @@ const Navbar = () => {
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // sign in anonymously (enabled to allow users to search)
-      signInAnonymously(auth)
-        .then(() => {
-          const queryCallable = httpsCallable(
-            functions,
-            `ext-${process.env.NEXT_PUBLIC_FIRESTORE_SEARCH_EXTENSION_NAME}-queryCallable`
-          );
-          // perform the search and limit the results to 10
-          queryCallable({ query: searchFormQuery, limit: 10 })
-            .then(async (result) => {
-              // display the results - an array of ids that best match our query
-              // closest matches first
-              // console.log(result.data)
-              const results: any = result.data;
-              const ids = results[Object.keys(results)[0]];
-              // creating an array of promises to batch request
-              // docs from firestore
-              const docPromises = ids.map((id: string) => {
-                const docRef = doc(db, "posts", id);
-                return getDoc(docRef);
-              });
-              const docSnapshot = await Promise.all(docPromises);
-              const xSearchResults = docSnapshot.map(
-                (doc: any) => doc.data() as SearchResultType
-              );
-              setRecoilSearchResultsState({
-                searchQuery: searchFormQuery,
-                searchResults: xSearchResults,
-              });
-              router.push("/results");
-            })
-            .catch((error) => {
-              console.error("Error querying function:", error);
-            });
-        })
-        .catch((error) => {
-          console.error("Error signing in anonymously:", error);
+      // // sign in anonymously (enabled to allow users to search)
+      // signInAnonymously(auth)
+      //   .then(() => {
+      //     const queryCallable = httpsCallable(
+      //       functions,
+      //       `ext-${process.env.NEXT_PUBLIC_FIRESTORE_SEARCH_EXTENSION_NAME}-queryCallable`
+      //     );
+      //     // perform the search and limit the results to 10
+      //     queryCallable({ query: searchFormQuery, limit: 10 })
+      //       .then(async (result) => {
+      //         // display the results - an array of ids that best match our query
+      //         // closest matches first
+      //         // console.log(result.data)
+      //         const results: any = result.data;
+      //         const ids = results[Object.keys(results)[0]];
+      //         // creating an array of promises to batch request
+      //         // docs from firestore
+      //         const docPromises = ids.map((id: string) => {
+      //           const docRef = doc(db, "posts", id);
+      //           return getDoc(docRef);
+      //         });
+      //         const docSnapshot = await Promise.all(docPromises);
+      //         const xSearchResults = docSnapshot.map(
+      //           (doc: any) => doc.data() as SearchResultType
+      //         );
+      //         setRecoilSearchResultsState({
+      //           searchQuery: searchFormQuery,
+      //           searchResults: xSearchResults,
+      //         });
+      //         router.push("/results");
+      //       })
+      //       .catch((error) => {
+      //         console.error("Error querying function:", error);
+      //       });
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error signing in anonymously:", error);
+      //   });
+
+      // const response = await gemini.embedContent(searchFormQuery);
+      // const queryEmbedding = response.embedding.values;
+
+      // const coll = firestoreClient.collection("posts");
+      // const vectorQuery: VectorQuery = coll.findNearest(
+      //   "embedding",
+      //   FieldValue.vector(queryEmbedding),
+      //   {
+      //     limit: 5,
+      //     distanceMeasure: "EUCLIDEAN",
+      //   }
+      // );
+
+      // const vectorQuerySnapshot: VectorQuerySnapshot = await vectorQuery.get();
+      // console.log(vectorQuerySnapshot);
+      try {
+        const response = await fetch("/api/search", {
+          method: "POST",
+          body: searchFormQuery,
         });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else {
+          console.error("Failed to fetch data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     } catch (error: any) {
       console.log(error);
     }
