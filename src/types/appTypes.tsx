@@ -29,5 +29,4 @@ export type SearchResultType = {
   title: string;
   content: string;
   embedding: object;
-  status: object;
 };
