@@ -1,29 +1,17 @@
 import dotenv from "dotenv";
 dotenv.config();
+import path from "path";
 
 // Config for Firebase
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getFunctions } from "firebase/functions";
-
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app); // Get Storage after app initialization
-const functions = getFunctions(app, "us-east4");
+import { Firestore, FieldValue } from "@google-cloud/firestore";
+// setting the env variable to store the file path to the
+// service account credentials.json file
+// do this to set up the firestore client
+process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(
+  process.cwd(),
+  "credentials.json"
+);
+const firestoreClient = new Firestore();
 
 // Config for Google Gemini - to generate text embeddings
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -82,9 +70,11 @@ const seedPosts = [
   },
 ];
 
+const postsRef = firestoreClient.collection("posts");
+
 for (const post of seedPosts) {
   const response = await gemini.embedContent(post.content);
-  const embedding = response.embedding.values;
-  post.embedding = embedding;
-  await addDoc(collection(db, "posts"), post);
+  let embedding = response.embedding.values;
+  post.embedding = FieldValue.vector(embedding);
+  await postsRef.add(post);
 }
