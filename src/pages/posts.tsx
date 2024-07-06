@@ -84,21 +84,38 @@ const Posts = () => {
 
       // Add a new post with a generated id
       // and embedding data from gemini
-      const data = {
-        userId: user?.uid,
-        title: postFormData.title,
-        content: postFormData.content,
-        // embedding: embedding,
-      };
+      // const data = {
+      //   userId: user?.uid,
+      //   title: postFormData.title,
+      //   content: postFormData.content,
+      //   // embedding: embedding,
+      // };
 
-      await addDoc(collection(db, "posts"), data);
-      fetchPosts();
-      setPostFormData({
-        userId: "",
-        title: "",
-        content: "",
-        // embedding: [],
+      // await addDoc(collection(db, "posts"), data);
+      // fetchPosts();
+      // setPostFormData({
+      //   userId: "",
+      //   title: "",
+      //   content: "",
+      //   // embedding: [],
+      // });
+
+      const response = await fetch("/api/post", {
+        method: "POST",
+        body: postFormData.content,
       });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setPostFormData({
+          userId: "",
+          title: "",
+          content: "",
+          // embedding: [],
+        });
+      } else {
+        console.error("Oops! Something happened with the search...");
+      }
     } catch (error: any) {
       console.log(error);
     }
