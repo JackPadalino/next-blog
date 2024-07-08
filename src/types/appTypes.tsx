@@ -8,7 +8,7 @@ export type PostType = {
   // the vertex AI extension we are using
   // to perform our seach creates an embedding field
   // automatically when a new post is created
-  // embedding: number[];
+  embedding: number[];
 };
 
 export type RegisterType = {

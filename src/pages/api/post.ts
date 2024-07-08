@@ -8,21 +8,19 @@ import {
   VectorQuerySnapshot,
 } from "@google-cloud/firestore";
 import firestoreClient from "@/cloud/cloudConfig";
+import { PostType } from "@/types/appTypes";
 
-type Data = {
-  post: string;
-};
-
-const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+const handler = async (req: NextApiRequest<PostType>, res: NextApiResponse) => {
   try {
-    // embedding post content with gemini
-    const response = await gemini.embedContent(req.body);
-    let postEmbedding = response.embedding.values;
+    let response = req.body;
+    const geminiResponse = await gemini.embedContent(response.content);
+    let postEmbedding = geminiResponse.embedding.values;
     postEmbedding = FieldValue.vector(postEmbedding);
-    console.log(postEmbedding);
-    res.status(200);
+    response.embedding = postEmbedding;
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error making post:", error);
+    res.status(500).json({ message: "Internal Server Error", embedding: [] });
   }
 };
 

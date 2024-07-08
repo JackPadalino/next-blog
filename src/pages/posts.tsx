@@ -32,7 +32,7 @@ const Posts = () => {
     userId: "",
     title: "",
     content: "",
-    // embedding: [],
+    embedding: [],
   });
 
   // fetching posts from Firebase
@@ -100,9 +100,19 @@ const Posts = () => {
       //   // embedding: [],
       // });
 
+      const data = {
+        userId: user.uid,
+        title: postFormData.title,
+        content: postFormData.content,
+        embedding: postFormData.embedding,
+      };
+
       const response = await fetch("/api/post", {
         method: "POST",
-        body: postFormData.content,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
       if (response.ok) {
         const data = await response.json();
@@ -111,7 +121,7 @@ const Posts = () => {
           userId: "",
           title: "",
           content: "",
-          // embedding: [],
+          embedding: [],
         });
       } else {
         console.error("Oops! Something happened with the search...");
