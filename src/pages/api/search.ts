@@ -55,12 +55,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       const cosineSimilarity =
         dotProduct / (queryEmbeddingMag * postEmbeddingMag);
 
-      // populating results array
-      results.push({
-        id: doc.id,
-        data: doc.data(),
-        similarity: cosineSimilarity,
-      });
+      // populating results array with cosine similartiy greater than
+      // or equal to 0.70
+      if (cosineSimilarity >= 0.7) {
+        results.push({
+          id: doc.id,
+          data: doc.data(),
+          similarity: cosineSimilarity,
+        });
+      }
 
       // order results by similarity
       results.sort((a: any, b: any) => b.similarity - a.similarity);
