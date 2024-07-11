@@ -14,38 +14,56 @@ type Data = {
   error: string;
 };
 
+/** this seems to be returning relevant results
+ * however it is going to be very slow since we
+ * are iterating through every post in the db and
+ * making a comparison
+ */
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
     const results: any = [];
 
     // embedding query with gemini
-    const response = await gemini.embedContent(req.body);
-    const queryEmbedding = response.embedding.values;
+    const geminiResponse = await gemini.embedContent(req.body);
+    const queryEmbedding = geminiResponse.embedding.values;
 
-    const postsRef = firestoreClient.collection("posts");
-    // const postsSnapshot = await postsRef.get();
-    // postsSnapshot.forEach((doc: any) => {
-    //   results.push({
-    //     id: doc.id,
-    //     data: doc.data(),
-    //   });
-    // });
-
-    const vectorQuery = postsRef.findNearest(
-      "embedding",
-      FieldValue.vector(queryEmbedding),
-      {
-        limit: 10,
-        distanceMeasure: "COSINE",
-      }
+    // calculating query embeddings magnitude
+    const sumOfSquares = queryEmbedding.reduce(
+      (sum: number, value: number) => sum + value * value,
+      0
     );
+    const queryEmbeddingMag = Math.sqrt(sumOfSquares);
 
-    const vectorQuerySnapshot = await vectorQuery.get();
-    vectorQuerySnapshot.forEach((doc: any) => {
+    // retrieving all posts from db
+    const postsRef = firestoreClient.collection("posts");
+    const postsSnapshot = await postsRef.get();
+
+    // iterating through each post and calculating cosine similarity
+    postsSnapshot.forEach((doc: any) => {
+      const data = doc.data();
+      const postEmbedding = data.embedding;
+      const postEmbeddingMag = data.embeddingMag;
+
+      // calculate dot product between query and post embeddings
+      const dotProduct = queryEmbedding.reduce(
+        (sum: number, a: number, i: string | number) =>
+          sum + a * postEmbedding[i],
+        0
+      );
+
+      // compute cosine similarity between query and post
+      const cosineSimilarity =
+        dotProduct / (queryEmbeddingMag * postEmbeddingMag);
+
+      // populating results array
       results.push({
         id: doc.id,
         data: doc.data(),
+        similarity: cosineSimilarity,
       });
+
+      // order results by similarity
+      results.sort((a: any, b: any) => b.similarity - a.similarity);
     });
 
     res.status(200).json({
