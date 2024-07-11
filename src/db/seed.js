@@ -3,7 +3,10 @@ dotenv.config();
 import path from "path";
 
 // Config for Firebase
-import { Firestore, FieldValue } from "@google-cloud/firestore";
+import {
+  Firestore,
+  // FieldValue
+} from "@google-cloud/firestore";
 // setting the env variable to store the file path to the
 // service account credentials.json file
 // do this to set up the firestore client
@@ -70,21 +73,15 @@ const seedPosts = [
   },
 ];
 
-// function for calculating embeddings array magnitude
-const calculateEmbeddingMag = (vector) => {
-  // Sum of the squares of each component
-  let sumOfSquares = vector.reduce((sum, value) => sum + value * value, 0);
-
-  // Square root of the sum of squares
-  return Math.sqrt(sumOfSquares);
-};
-
 const postsRef = firestoreClient.collection("posts");
 
 for (const post of seedPosts) {
   const geminiResponse = await gemini.embedContent(post.content);
   const embedding = geminiResponse.embedding.values;
-  const embeddingMag = calculateEmbeddingMag(embedding);
+  // calculating embeddings array magnitude
+  // sum of the squares of each component
+  const sumOfSquares = embedding.reduce((sum, value) => sum + value * value, 0);
+  const embeddingMag = Math.sqrt(sumOfSquares);
   /**
   have to comment this out - to perform the cosine similarity
   calculation in the search api endpoint the embedding must
