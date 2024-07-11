@@ -70,11 +70,22 @@ const seedPosts = [
   },
 ];
 
+// function for calculating embeddings array magnitude
+const calculateEmbeddingMag = (vector) => {
+  // Sum of the squares of each component
+  let sumOfSquares = vector.reduce((sum, value) => sum + value * value, 0);
+
+  // Square root of the sum of squares
+  return Math.sqrt(sumOfSquares);
+};
+
 const postsRef = firestoreClient.collection("posts");
 
 for (const post of seedPosts) {
-  const response = await gemini.embedContent(post.content);
-  let embedding = response.embedding.values;
+  const geminiResponse = await gemini.embedContent(post.content);
+  const embedding = geminiResponse.embedding.values;
+  const embeddingMag = calculateEmbeddingMag(embedding);
   post.embedding = FieldValue.vector(embedding);
+  post.embeddingMag = embeddingMag;
   await postsRef.add(post);
 }
