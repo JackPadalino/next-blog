@@ -85,7 +85,13 @@ for (const post of seedPosts) {
   const geminiResponse = await gemini.embedContent(post.content);
   const embedding = geminiResponse.embedding.values;
   const embeddingMag = calculateEmbeddingMag(embedding);
-  post.embedding = FieldValue.vector(embedding);
+  /**
+  have to comment this out - to perform the cosine similarity
+  calculation in the search api endpoint the embedding must
+  be a plain array - not a FieldValue type
+  */
+  // post.embedding = FieldValue.vector(embedding);
+  post.embedding = embedding;
   post.embeddingMag = embeddingMag;
   await postsRef.add(post);
 }
