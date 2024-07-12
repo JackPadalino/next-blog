@@ -14,10 +14,18 @@ type Data = {
   error: string;
 };
 
-/** this seems to be returning relevant results
- * however it is going to be very slow since we
+/**
+ * Endpoing for processing user's query and making
+ * cosine similarity to return relevant search results.
+ *
+ * This is returning relevant results
+ * however it will be slow in the future. We
  * are iterating through every post in the db and
- * making a comparison
+ * making a comparison O(n).
+ *
+ * In the future, consider fetching only each doc's ID,
+ * embedding, and embeddingMag (instead of all data),
+ * then process the posts in batches.
  */
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
