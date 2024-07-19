@@ -1,12 +1,13 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 
+import { GetServerSideProps } from "next";
 import { auth, db } from "../firebase/firebaseApp";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 
 // import gemini from "@/gemini/geminiConfig";
 
-import { postsState } from "@/recoil/postsAtom";
-import { useRecoilState } from "recoil";
+// import { postsState } from "@/recoil/postsAtom";
+// import { useRecoilState } from "recoil";
 
 import { PostType } from "../types/appTypes"; // importing type
 
@@ -23,10 +24,35 @@ import {
 } from "@chakra-ui/react";
 import styles from "@/styles/Posts.module.css";
 
-const Posts = () => {
+export const getServerSideProps: GetServerSideProps = async () => {
+  console.log("fetching posts");
+  try {
+    const postsSnapshot = await getDocs(collection(db, "posts"));
+    const postProps = postsSnapshot.docs.map((doc) => doc.data() as PostType);
+    // return the fetched data as props
+    return {
+      props: {
+        postProps,
+      },
+    };
+  } catch (error: any) {
+    console.error("Error fetching posts:", error);
+    return {
+      props: {
+        posts: [],
+      },
+    };
+  }
+};
+
+interface PostsProps {
+  postProps: PostType[];
+}
+
+const Posts = ({ postProps }: PostsProps) => {
+  const [posts, setPosts] = useState<PostType[]>([]);
   const user = auth.currentUser; // currently signed in user?
-  const [recoilPostsState, setRecoilPostsState] = useRecoilState(postsState);
-  //   const [posts, setPosts] = useState<PostType[]>([]);
+  // const [recoilPostsState, setRecoilPostsState] = useRecoilState(postsState);
   const [postFormError, setPostFormError] = useState<string>("");
   const [postFormData, setPostFormData] = useState<PostType>({
     userId: "",
@@ -36,18 +62,21 @@ const Posts = () => {
   });
 
   // fetching posts from Firebase
-  const fetchPosts = async () => {
+  const updatePosts = async () => {
     try {
-      const postsSnapshot = await getDocs(collection(db, "posts"));
+      const updatedPostsSnapshot = await getDocs(collection(db, "posts"));
       // have to explicitly say that each document coming from Firebase DB is a 'PostType'
       // It comes down originally as type 'DocumentData'?
-      const xPosts = postsSnapshot.docs.map((doc) => doc.data() as PostType);
+      const updatedPosts = updatedPostsSnapshot.docs.map(
+        (doc) => doc.data() as PostType
+      );
+      setPosts(updatedPosts);
       // update the posts array in the posts atom
       // update only the posts array within PostsState
-      setRecoilPostsState((prevState) => ({
-        ...prevState,
-        posts: xPosts,
-      }));
+      // setRecoilPostsState((prevState) => ({
+      //   ...prevState,
+      //   posts: xPosts,
+      // }));
     } catch (error: any) {
       console.log(error);
     }
@@ -115,7 +144,7 @@ const Posts = () => {
         body: JSON.stringify(data),
       });
       if (response.ok) {
-        fetchPosts();
+        updatePosts();
         setPostFormData({
           userId: "",
           title: "",
@@ -130,13 +159,31 @@ const Posts = () => {
     }
   };
 
+  useEffect(() => {
+    setPosts(postProps);
+  }, []);
+
   return (
     <Box className={`${styles.postsMainContainer}`}>
       <Heading>Posts</Heading>
       <Box className={styles.postsSecondContainer}>
-        {recoilPostsState.posts.length ? (
+        {/* {recoilPostsState.posts.length ? (
           <Box className={`${styles.postsCardsContainer}`}>
             {recoilPostsState.posts.map((post: PostType, index: number) => (
+              <Card key={index} className={`${styles.postCard}`}>
+                <CardBody>
+                  <Heading>{post.title}</Heading>
+                  <Text>{post.content}</Text>
+                </CardBody>
+              </Card>
+            ))}
+          </Box>
+        ) : (
+          <Text>There are no posts right now!</Text>
+        )} */}
+        {posts.length ? (
+          <Box className={`${styles.postsCardsContainer}`}>
+            {posts.map((post: PostType, index: number) => (
               <Card key={index} className={`${styles.postCard}`}>
                 <CardBody>
                   <Heading>{post.title}</Heading>

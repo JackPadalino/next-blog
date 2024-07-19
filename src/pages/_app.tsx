@@ -41,7 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <RecoilRoot>
-      <FetchData />
+      {/* <FetchData /> */}
       <ChakraProvider>
         <Layout>
           <Component {...pageProps} />
